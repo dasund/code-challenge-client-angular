@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
     },
   ];
 
-  readonly data: any = {};
+   data: any = {};
 
   constructor(private httpClient: HttpClient) {
   }
@@ -60,19 +60,38 @@ export class AppComponent implements OnInit {
         this.httpClient.get(`http://localhost:8081/temperature/${product.id}`)
           .pipe(
             tap(response => {
+              
               this.data[product.id] = {
                 ...product,
                 ...response
               };
+              console.log(this.data);
             })
           ).subscribe();
       });
     };
 
-    loadData();
+
+    
+    var tempList = [];
+    const loadMultipleData = () => {
+      this.httpClient.post(`http://localhost:8081/temperature/multiple`,{ids:[1,2,3,4,5,6]})
+        .pipe(
+          tap(response => {
+              tempList = <any>response;
+              tempList.forEach(temp=>{
+                var tProduct = this.products.filter(y=>y.id === temp['id'] )[0];
+                tProduct['temperature'] = temp['temperature'];
+                this.data = this.products;
+              })
+          })
+        ).subscribe();
+    };
+    loadMultipleData();
+    // loadData();
 
     setInterval(() => {
-      loadData();
+      loadMultipleData();
     }, 5000);
   }
 }
