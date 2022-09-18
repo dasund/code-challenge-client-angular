@@ -71,11 +71,19 @@ export class AppComponent implements OnInit {
       });
     };
 
-
+    var idList: string[] = [];
+    this.products.forEach((prod) => {
+      idList.push(prod.id);
+    });
+    this.loadMultipleTemps({ids:idList});
     
+    
+  }
+
+  loadMultipleTemps(reqObj){
     var tempList = [];
     const loadMultipleData = () => {
-      this.httpClient.post(`http://localhost:8081/temperature/multiple`,{ids:[1,2,3,4,5,6]})
+      this.httpClient.post(`http://localhost:8081/temperature/multiple`,reqObj)
         .pipe(
           tap(response => {
               tempList = <any>response;
